@@ -6,8 +6,8 @@
 
 CC=gcc
 PROG=stag
-CURSES=-lncurses -lmenu -lform 
-CURSESW=-lncursesw -lmenuw -lformw -D_CURSESW_WIDE
+CURSES=-lncurses -lmenu -lform -ltinfo
+CURSESW=-lncursesw -lmenuw -lformw -ltinfow -D_CURSESW_WIDE
 FILES=ui.c stag.c tagger.c strlcpy.c strlcat.c basename.c dirname.c kb.c
 CFLAGS+=-ansi -pedantic -Wall -D_BSD_SOURCE
 CPPFLAGS+=-I/usr/local/include `taglib-config --cflags`
