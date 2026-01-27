@@ -9,7 +9,7 @@ PROG=stag
 CURSES=-lncurses -lmenu -lform -ltinfo
 CURSESW=-lncursesw -lmenuw -lformw -ltinfow -D_CURSESW_WIDE
 FILES=ui.c stag.c tagger.c strlcpy.c strlcat.c basename.c dirname.c kb.c
-CFLAGS+=-ansi -pedantic -Wall -D_BSD_SOURCE
+CFLAGS+=-ansi -pedantic -Wall -D_DEFAULT_SOURCE
 CPPFLAGS+=-I/usr/local/include `taglib-config --cflags`
 LDFLAGS+=-L/usr/local/lib `taglib-config --libs` -ltag_c -lstdc++ 
 
