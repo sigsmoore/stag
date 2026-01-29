@@ -1,6 +1,7 @@
 NOTE: I forked github.com/smabie/stag after it failed to compile, probably
-because it hasn't been updated in over 10 years. My intention is to update the
-code enough so that it compiles without changing any functionality.
+because it hasn't been updated in over 10 years. Fixing the compilation error
+turned out to be just a matter of adding a library and changing one CFLAG in
+the Makefile. Now I want to make some improvements.
 
 stag is a C curses based mp3/ogg/flac tagging application. 
 
