@@ -19,6 +19,11 @@ Dependencies:
     * ncurses (probably included with your distribution)
     * taglib (sometimes called libtag) 
 
+Planned features:
+    * Help screen
+    * Show file path in info window
+    * Use a custom set of tags
+
 Check out INSTALL for installation instructions. Check out the man
 page for usage info.
 
