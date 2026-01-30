@@ -148,13 +148,15 @@ void
 hide_help()
 {
         if (state != HELP_MODE) return;
-       delwin(help);
-       touchwin(stdscr);
-       touchwin(dir.win);
-       touchwin(file.win);
-       refresh();
-       wrefresh(dir.win);
-       wrefresh(file.win);
-       help = NULL;
-       state = help_state;
+	delwin(help_win);
+	touchwin(stdscr);
+	touchwin(dir.win);
+	touchwin(file.win);
+	touchwin(info.win);
+	refresh();
+	wrefresh(dir.win);
+	wrefresh(file.win);
+	wrefresh(info.win);
+	help_win = NULL;
+	state = help_state;
 }
