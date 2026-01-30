@@ -20,6 +20,7 @@
 
 struct frame dir, file, info;
 struct textbox edit;
+WINDOW *help;
 
 int resizep;
 char cwd[PATH_MAX];
@@ -47,6 +48,7 @@ main(int argc, char **argv)
 	metap = 0;
 	state = DIR_MODE;
 	info.menu = NULL;
+	help = NULL;
         
 	signal(SIGWINCH, resize);
 	(void)memset(wtfbuf, ' ', 1023);
@@ -526,4 +528,30 @@ void
 resize(int s)
 {
 	resizep = 1;
+}
+
+void
+show_help()
+{
+        if (state == HELP_MODE) return;
+	help_state = state;
+	state = HELP_MODE;
+	help = make_win(3, 30, (LINES - 3) / 2, (COLS - 30) / 2);
+	box(help, 0, 0);
+	mvwprintw(help, 1, 2, "Press q to exit help mode.");
+	wrefresh(help);
+}
+void
+hide_help()
+{
+        if (state != HELP_MODE) return;
+	delwin(help);
+	touchwin(stdscr);
+	touchwin(dir.win);
+	touchwin(file.win);
+	refresh();
+	wrefresh(dir.win);
+	wrefresh(file.win);
+	help = NULL;
+	state = help_state;
 }

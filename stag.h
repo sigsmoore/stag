@@ -130,6 +130,8 @@ char *str_cleanup(char *);
 char *clean_xstrdup(char *);
 const char *make_regex_str(TagLib_Tag *);
 void resize(int);
+void show_help();
+void hide_help();
 
 void stag_warnx(const char *, ...);
 void stag_warn(const char *, ...);
