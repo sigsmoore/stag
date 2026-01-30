@@ -23,7 +23,7 @@ struct textbox edit;
 
 int resizep;
 char cwd[PATH_MAX];
-enum mode state;
+enum mode state, help_state;
 
 jmp_buf env;
 
@@ -120,7 +120,7 @@ resize:
 	while ((c = wgetch(state == DIR_MODE ? 
 			   dir.win : (state == FILE_MODE ? 
 				      file.win : info.win))) != EOF) {
-		if (c == 'q' && state != EDIT_MODE)
+		if (c == 'q' && state != EDIT_MODE && state != HELP_MODE)
 			break;
 		if (resizep) {
 			dir.idx = item_index(current_item
@@ -515,6 +515,9 @@ print_state()
         case EDIT_MODE:
                 s = "edit-mode";
                 break;
+	case HELP_MODE:
+		s = "help-mode";
+		break;
         }
         mvprintw(0, 0, " %s", s);
         refresh();

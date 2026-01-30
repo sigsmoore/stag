@@ -78,7 +78,7 @@ extern char cwd[];
 extern const char *ext[];
 extern struct textbox edit;
 extern struct frame dir, file, info;
-extern enum mode { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE } state;
+extern enum mode { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE, HELP_MODE } state;
 extern jmp_buf env;
 
 struct entry {	
