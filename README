@@ -25,6 +25,7 @@ Planned features:
     * Use a custom set of tags
     * Hide cursor in directory and file modes
     * Load argv[1] instead of cwd
+    * Command line option to prevent scanning directory
 
 Check out INSTALL for installation instructions. Check out the man
 page for usage info.
