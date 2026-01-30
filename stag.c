@@ -40,7 +40,7 @@ main(int argc, char **argv)
         struct winsize w;
         regex_t reg;
         char *s;
-        int c, hidden, many, d, regexp, idx;
+        int c, hidden, many, d, regexp, idx, curx, cury;
         int metap;
 
         idx  = regexp = many = hidden = 0;
@@ -196,9 +196,11 @@ resize:
                                 continue;
                         case '/':
                                 kb_regex1(&regexp);
+                                curs_set(1);
                                 continue;
                         rjmp:
                                 kb_regex2(&reg, s);
+                                curs_set(0);
                                 break;
                         case 'a':
                                 kb_toggle_all();
@@ -261,7 +263,11 @@ resize:
                                 continue;
                         case 13:
                                 kb_edit_field();
+                                getyx(edit.win, cury, curx);
                                 print_state();
+                                wmove(edit.win, cury, curx);
+                                curs_set(1);
+                                wrefresh(edit.win);
                                 continue;
                         case KEY_RIGHT:
                         case 'o':
@@ -307,6 +313,7 @@ resize:
                                 
                                 if (regexp) {
                                         regexp = 0;
+                                        curs_set(0);
                                         state = FILE_MODE;
                                         print_state();
                                         goto rjmp;
@@ -347,7 +354,8 @@ resize:
                                                                many));
                                 post_menu(info.menu);
                                 nth_item(info.menu, idx);
-                                
+
+                                curs_set(0);
                                 wrefresh(edit.win);
                                 state = INFO_MODE;
                                 print_state();
@@ -434,6 +442,8 @@ init_screen()
         meta(stdscr, TRUE);
 
         set_menu_format(NULL, LINES - INFO_LEN - 1, 0);
+
+        curs_set(0);
 }
 
 void
