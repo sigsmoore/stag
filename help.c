@@ -85,13 +85,64 @@ const char *info_help_text[] = {
 void
 show_help()
 {
-        if (state == HELP_MODE) return;
-       help_state = state;
-       state = HELP_MODE;
-       help = make_win(3, 30, (LINES - 3) / 2, (COLS - 30) / 2);
-       box(help, 0, 0);
-       mvwprintw(help, 1, 2, "Press q to exit help mode.");
-       wrefresh(help);
+        size_t  global_help_lines = sizeof(global_help_text)/sizeof(*global_help_text),
+		end_help_lines = sizeof(end_help_text)/sizeof(*end_help_text),
+		mode_help_lines = 0;
+	const char **mode_help_text;
+	int n_lines, n_rows, i, curr_line;
+	char line[HELP_TEXT_MAX_LINE];
+
+	switch(state) {
+	case DIR_MODE:
+		mode_help_lines = sizeof(dir_help_text)/sizeof(*dir_help_text);
+		mode_help_text = dir_help_text;
+		break;
+	case FILE_MODE:
+		mode_help_lines = sizeof(file_help_text)/sizeof(*file_help_text);
+		mode_help_text = file_help_text;
+		break;
+	case INFO_MODE:
+		mode_help_lines = sizeof(info_help_text)/sizeof(*info_help_text);
+		mode_help_text = info_help_text;
+		break;
+	case EDIT_MODE:
+		mode_help_lines = 0;
+		mode_help_text = NULL;
+		break;
+	case HELP_MODE:
+		return;
+	}
+	n_lines = global_help_lines + end_help_lines + mode_help_lines
+		+ (mode_help_lines > 0 ? 10 : 6);
+	n_rows = n_lines > LINES-2 ? LINES-2 : n_lines;
+	help_win = make_win(n_lines, HELP_TEXT_MAX_LINE + 10,
+			    (LINES - n_rows) / 2, (COLS - HELP_TEXT_MAX_LINE - 10) / 2);
+	box(help_win, 0, 0);
+	curr_line = 1;
+	for (i=0; i<global_help_lines; i++) {
+		strlcpy(line, global_help_text[i], HELP_TEXT_MAX_LINE);
+		mvwprintw(help_win, ++curr_line, 5, line);
+	}
+	if (mode_help_lines > 0) {
+		curr_line += 2;
+		mvwhline(help_win, curr_line, 4, ACS_HLINE, HELP_TEXT_MAX_LINE);
+		curr_line++;
+		for (i=0; i<mode_help_lines; i++) {
+			strlcpy(line, mode_help_text[i], HELP_TEXT_MAX_LINE);
+			mvwprintw(help_win, ++curr_line, 5, line);
+		}
+	}
+	curr_line += 2;
+	mvwhline(help_win, curr_line, 5, ACS_HLINE, HELP_TEXT_MAX_LINE);
+	curr_line++;
+	for (i=0; i<end_help_lines; i++) {
+		strlcpy(line, end_help_text[i], HELP_TEXT_MAX_LINE);
+		mvwprintw(help_win, ++curr_line, 5, line);
+	}
+	wrefresh(help_win);
+
+	help_state = state;
+	state = HELP_MODE;
 }
 void
 hide_help()
