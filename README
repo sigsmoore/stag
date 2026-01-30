@@ -23,6 +23,8 @@ Planned features:
     * Help screen
     * Show file path in info window
     * Use a custom set of tags
+    * Hide cursor in directory and file modes
+    * Load argv[1] instead of cwd
 
 Check out INSTALL for installation instructions. Check out the man
 page for usage info.
