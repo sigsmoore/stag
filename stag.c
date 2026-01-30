@@ -173,6 +173,10 @@ resize:
                         case 16:
                                 menu_driver(dir.menu, REQ_SCR_UPAGE);
                                 break;
+			case '?':
+				show_help();
+				print_state();
+				break;
                         }
                 }
                 
@@ -243,6 +247,10 @@ resize:
                         case 'w':
                                 kb_write_marked();
                                 break;
+			case '?':
+				show_help();
+				print_state();
+				break;
                         }
                 }
                 
@@ -273,6 +281,19 @@ resize:
                         case 'p':
                                 menu_driver(info.menu, REQ_UP_ITEM);
                                 break;
+			case '?':
+				show_help();
+				print_state();
+				break;
+                        }
+                }
+                
+		if (state == HELP_MODE) {
+                        switch (c) {
+			case 'q':
+				hide_help();
+				print_state();
+				break;
                         }
                 }
                 
