@@ -26,6 +26,7 @@ Planned features:
     * Hide cursor in directory and file modes
     * Load argv[1] instead of cwd
     * Command line option to prevent scanning directory
+    * Sort files before adding? or at least sort the files in each directory added
 
 Check out INSTALL for installation instructions. Check out the man
 page for usage info.
