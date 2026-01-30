@@ -8,15 +8,15 @@
 /* 
  * Access entry from list item.
  */
-#define ENTRY(x) ((struct entry *)					\
-		  (item_userptr(current_item((const MENU *)(x)))))
+#define ENTRY(x) ((struct entry *)                                      \
+                  (item_userptr(current_item((const MENU *)(x)))))
 
-#define CHOOSE(t, s) do {			\
-	if (many)			        \
-		set_marked_##t (s);		\
-	else	 				\
-		set_##t (ENTRY(file.menu), s);	\
-	} while (0)					
+#define CHOOSE(t, s) do {                       \
+        if (many)                               \
+                set_marked_##t (s);             \
+        else                                    \
+                set_##t (ENTRY(file.menu), s);  \
+        } while (0)
 
 struct frame dir, file, info;
 struct textbox edit;
@@ -37,108 +37,108 @@ jmp_buf env;
 int
 main(int argc, char **argv)
 {
-	struct winsize w;
-	regex_t reg;
-	char *s;
-	int c, hidden, many, d, regexp, idx;
-	int metap;
+        struct winsize w;
+        regex_t reg;
+        char *s;
+        int c, hidden, many, d, regexp, idx;
+        int metap;
 
-	idx  = regexp = many = hidden = 0;
-	metap = 0;
-	state = DIR_MODE;
-	info.menu = NULL;
+        idx  = regexp = many = hidden = 0;
+        metap = 0;
+        state = DIR_MODE;
+        info.menu = NULL;
         
-	signal(SIGWINCH, resize);
-	(void)memset(wtfbuf, ' ', 1023);
-	
-	(void)setlocale(LC_ALL, "");
+        signal(SIGWINCH, resize);
+        (void)memset(wtfbuf, ' ', 1023);
+        
+        (void)setlocale(LC_ALL, "");
 
         if (getcwd(cwd, PATH_MAX) == NULL)
-		err(1, "getcwd");
+                err(1, "getcwd");
 
-	if (getopt(argc, argv, "") != -1) {
-		(void)fprintf(stderr, "usage: %s [directory ...]\n", PROG_NAME);
-		exit(1);
-	}
+        if (getopt(argc, argv, "") != -1) {
+                (void)fprintf(stderr, "usage: %s [directory ...]\n", PROG_NAME);
+                exit(1);
+        }
 
-	for (d = 1; d < argc; d++) {
-		if (access(argv[d], R_OK | W_OK | X_OK) == -1) {
-			warn("access: %s", argv[d]);
-			continue;
-		}
-		if (populate_active(argv[d], AFLG_REC))
-			return 1;
-	}
-	/* 
-	 * This jump is awful and makes things initially difficult to reason
-	 * about.
-	 */
+        for (d = 1; d < argc; d++) {
+                if (access(argv[d], R_OK | W_OK | X_OK) == -1) {
+                        warn("access: %s", argv[d]);
+                        continue;
+                }
+                if (populate_active(argv[d], AFLG_REC))
+                        return 1;
+        }
+        /* 
+         * This jump is awful and makes things initially difficult to reason
+         * about.
+         */
 resize:
         init_screen();
 
         dir.idx = file.idx = info.idx = 0;
 
-	dir.win = make_win(LINES - INFO_LEN - 1, COLS / 2, 1, 0);
-	file.win = make_win(LINES - INFO_LEN - 1, COLS / 2, 1, COLS / 2 + 1);
-	info.win = make_win(INFO_LEN - 1, COLS, LINES - INFO_LEN + 1, 9);
-	edit.win = make_win(1, COLS, LINES - 1, 0);
+        dir.win = make_win(LINES - INFO_LEN - 1, COLS / 2, 1, 0);
+        file.win = make_win(LINES - INFO_LEN - 1, COLS / 2, 1, COLS / 2 + 1);
+        info.win = make_win(INFO_LEN - 1, COLS, LINES - INFO_LEN + 1, 9);
+        edit.win = make_win(1, COLS, LINES - 1, 0);
 
         dir.menu = make_menu(path_make_items(cwd, hidden), dir.win);
         file.menu = make_menu(NULL, file.win);
         info.menu = make_menu(NULL, info.win);
 
-	menu_opts_off(file.menu, O_ONEVALUE);
+        menu_opts_off(file.menu, O_ONEVALUE);
 
-	edit.field[0] = new_field(1, COLS, 0, 0, 0, 0);
-	edit.field[1] = NULL;
+        edit.field[0] = new_field(1, COLS, 0, 0, 0, 0);
+        edit.field[1] = NULL;
 
-	field_opts_off(edit.field[0], O_AUTOSKIP | O_STATIC);
-	edit.form = new_form(edit.field);
+        field_opts_off(edit.field[0], O_AUTOSKIP | O_STATIC);
+        edit.form = new_form(edit.field);
 
-	set_form_win(edit.form, edit.win);
-	set_form_sub(edit.form, edit.win);
-	
-	set_menu_items(file.menu, list_make_items());
-	post_menu(file.menu);
- 	post_menu(dir.menu);
+        set_form_win(edit.form, edit.win);
+        set_form_sub(edit.form, edit.win);
+        
+        set_menu_items(file.menu, list_make_items());
+        post_menu(file.menu);
+        post_menu(dir.menu);
 
-	nth_item(dir.menu, dir.idx);
-	nth_item(file.menu, file.idx);
+        nth_item(dir.menu, dir.idx);
+        nth_item(file.menu, file.idx);
 
-	if (state == INFO_MODE) {
-		set_menu_items(info.menu, 
-			       info_make_items(ENTRY(file.menu), 0));
-		post_menu(info.menu);		
-		nth_item(info.menu, info.idx);
-	}
+        if (state == INFO_MODE) {
+                set_menu_items(info.menu, 
+                               info_make_items(ENTRY(file.menu), 0));
+                post_menu(info.menu);
+                nth_item(info.menu, info.idx);
+        }
 
-	refresh();
-	wrefresh(info.win);
-	wrefresh(file.win);
-	wrefresh(dir.win);
+        refresh();
+        wrefresh(info.win);
+        wrefresh(file.win);
+        wrefresh(dir.win);
 
-	while ((c = wgetch(state == DIR_MODE ? 
-			   dir.win : (state == FILE_MODE ? 
-				      file.win : info.win))) != EOF) {
-		if (c == 'q' && state != EDIT_MODE && state != HELP_MODE)
-			break;
-		if (resizep) {
-			dir.idx = item_index(current_item
-					     ((const MENU *)dir.menu));
-			file.idx = item_index(current_item
-					      ((const MENU *)file.menu));
-			info.idx = item_index(current_item
-					      ((const MENU *)info.menu));
+        while ((c = wgetch(state == DIR_MODE ? 
+                           dir.win : (state == FILE_MODE ? 
+                                      file.win : info.win))) != EOF) {
+                if (c == 'q' && state != EDIT_MODE && state != HELP_MODE)
+                        break;
+                if (resizep) {
+                        dir.idx = item_index(current_item
+                                             ((const MENU *)dir.menu));
+                        file.idx = item_index(current_item
+                                              ((const MENU *)file.menu));
+                        info.idx = item_index(current_item
+                                              ((const MENU *)info.menu));
 
-			resizep = 0;
-			ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-			resize_term(w.ws_row, w.ws_col);			
+                        resizep = 0;
+                        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+                        resize_term(w.ws_row, w.ws_col);
                         destroy_screen();
 
-			goto resize;
-		}
+                        goto resize;
+                }
                 
-		if (state == DIR_MODE) {
+                if (state == DIR_MODE) {
                         switch (c) {
                         case ' ':
                                 kb_add();
@@ -171,14 +171,14 @@ resize:
                         case 16:
                                 menu_driver(dir.menu, REQ_SCR_UPAGE);
                                 break;
-			case '?':
-				show_help();
-				print_state();
-				break;
+                        case '?':
+                                show_help();
+                                print_state();
+                                break;
                         }
                 }
                 
-		if (state == FILE_MODE) {
+                if (state == FILE_MODE) {
                         switch (c) {
                         case 9:
                                 if (any_marked())
@@ -245,14 +245,14 @@ resize:
                         case 'w':
                                 kb_write_marked();
                                 break;
-			case '?':
-				show_help();
-				print_state();
-				break;
+                        case '?':
+                                show_help();
+                                print_state();
+                                break;
                         }
                 }
                 
-		if (state == INFO_MODE) {
+                if (state == INFO_MODE) {
                         switch (c) {
                         case 9:
                                 kb_other();
@@ -270,7 +270,7 @@ resize:
                                 continue;
                         case KEY_LEFT:
                                 kb_left();
-				print_state();
+                                print_state();
                                 continue;
                         case KEY_DOWN:
                         case 'n':
@@ -280,25 +280,25 @@ resize:
                         case 'p':
                                 menu_driver(info.menu, REQ_UP_ITEM);
                                 break;
-			case '?':
-				show_help();
-				print_state();
-				break;
+                        case '?':
+                                show_help();
+                                print_state();
+                                break;
                         }
                 }
                 
-		if (state == HELP_MODE) {
+                if (state == HELP_MODE) {
                         switch (c) {
-			case 'q':
-				hide_help();
-				print_state();
-				break;
+                        case 'q':
+                                hide_help();
+                                print_state();
+                                break;
                         }
                 }
                 
-		if (state == EDIT_MODE) {
+                if (state == EDIT_MODE) {
                         switch (c) {
-                        case 13:	/* LF */
+                        case 13:        /* LF */
                                 form_driver(edit.form, REQ_NEXT_FIELD);
                                 
                                 s = str_cleanup(field_buffer(edit.field[0], 0));
@@ -335,7 +335,7 @@ resize:
                                 case 5:
                                         CHOOSE(year, atoi(s));
                                         break;
-                                case 6:	CHOOSE(comment, s);
+                                case 6:         CHOOSE(comment, s);
                                         break;
                                 }
                                 idx = item_index(current_item
@@ -352,40 +352,40 @@ resize:
                                 state = INFO_MODE;
                                 print_state();
                                 continue;
-                        case KEY_BACKSPACE:	/* backspace */
+                        case KEY_BACKSPACE:     /* backspace */
                                 form_driver(edit.form, REQ_DEL_PREV);
                                 break;
-                        case 1:		/* C-a */
+                        case 1:                 /* C-a */
                                 form_driver(edit.form, REQ_BEG_FIELD);
                                 break;
                         case KEY_LEFT:
-                        case 2:		/* C-b */
+                        case 2:                 /* C-b */
                                 form_driver(edit.form, REQ_PREV_CHAR);
                                 break;
                         case KEY_DC:
-                        case 4:		/* C-d */
+                        case 4:                 /* C-d */
                                 form_driver(edit.form, REQ_DEL_CHAR);
                                 break;
-                        case 5:		/* C-e */
+                        case 5:                 /* C-e */
                                 form_driver(edit.form, REQ_END_FIELD);
                                 break;
                         case KEY_RIGHT:
-                        case 6:		/* C-f */
+                        case 6:                 /* C-f */
                                 form_driver(edit.form, REQ_NEXT_CHAR);
                                 break;
-                        case 11:	/* C-k */
+                        case 11:        /* C-k */
                                 form_driver(edit.form, REQ_CLR_EOF);
                                 break;
-                        case 27:	/* meta key */
+                        case 27:        /* meta key */
                                 metap = 1;
                                 break;
-                        case 'b':	/* M-b */
+                        case 'b':       /* M-b */
                                 if (metap) {
                                         metap = 0;
                                         form_driver(edit.form, REQ_PREV_WORD);
                                         break;
                                 }
-                        case 'f':	/* M-f */
+                        case 'f':       /* M-f */
                                 if (metap) {
                                         metap = 0;
                                         form_driver(edit.form, REQ_NEXT_WORD);
@@ -396,13 +396,13 @@ resize:
                                 break;
                         }
                 }
-		if (state == EDIT_MODE) 
-			wrefresh(edit.win);
-	}
+                if (state == EDIT_MODE) 
+                        wrefresh(edit.win);
+        }
 
         destroy_screen();
 
-	return 0;
+        return 0;
 }
 
 void
@@ -413,27 +413,27 @@ init_screen()
         (void)gethostname(hostname, MAXHOSTNAMELEN);
         
         initscr();
-	raw();
-	noecho();
-	nonl();
-                
-	mvvline(1, COLS / 2, 0, LINES - INFO_LEN - 1);
-	mvhline(LINES - INFO_LEN, 0, 0, COLS);
-	mvprintw(0, COLS - sizeof(PROG_NAME) - strlen(hostname) - 1,
-		 "%s@%s", PROG_NAME, hostname);
+        raw();
+        noecho();
+        nonl();
+        
+        mvvline(1, COLS / 2, 0, LINES - INFO_LEN - 1);
+        mvhline(LINES - INFO_LEN, 0, 0, COLS);
+        mvprintw(0, COLS - sizeof(PROG_NAME) - strlen(hostname) - 1,
+                 "%s@%s", PROG_NAME, hostname);
         print_state();
-	mvprintw(LINES - INFO_LEN + 1, 0, "track:\t ");
-	mvprintw(LINES - INFO_LEN + 2, 0, "title:\t ");
-	mvprintw(LINES - INFO_LEN + 3, 0, "artist:\t ");
-	mvprintw(LINES - INFO_LEN + 4, 0, "album:\t ");
-	mvprintw(LINES - INFO_LEN + 5, 0, "genre:\t ");
-	mvprintw(LINES - INFO_LEN + 6, 0, "year:\t ");
-	mvprintw(LINES - INFO_LEN + 7, 0, "comment:\t ");
+        mvprintw(LINES - INFO_LEN + 1, 0, "track:\t ");
+        mvprintw(LINES - INFO_LEN + 2, 0, "title:\t ");
+        mvprintw(LINES - INFO_LEN + 3, 0, "artist:\t ");
+        mvprintw(LINES - INFO_LEN + 4, 0, "album:\t ");
+        mvprintw(LINES - INFO_LEN + 5, 0, "genre:\t ");
+        mvprintw(LINES - INFO_LEN + 6, 0, "year:\t ");
+        mvprintw(LINES - INFO_LEN + 7, 0, "comment:\t ");
 
-	intrflush(stdscr, FALSE);
-	meta(stdscr, TRUE);
+        intrflush(stdscr, FALSE);
+        meta(stdscr, TRUE);
 
-	set_menu_format(NULL, LINES - INFO_LEN - 1, 0);
+        set_menu_format(NULL, LINES - INFO_LEN - 1, 0);
 }
 
 void
@@ -443,7 +443,7 @@ destroy_screen()
         werase(file.win);
         werase(dir.win);
         werase(info.win);
-	
+        
         delwin(dir.win);
         delwin(file.win);
         delwin(info.win);
@@ -483,19 +483,19 @@ make_menu(ITEM **items, WINDOW *win)
 char *
 str_cleanup(char *s)
 {
-	static char buf[1024];
-	char *ret;
-	int c;
-	
-	(void)strlcpy(buf, s, 1024);
+        static char buf[1024];
+        char *ret;
+        int c;
+        
+        (void)strlcpy(buf, s, 1024);
 
-	for (ret = buf; isspace(*ret); ret++)
-		;
-	for (c = strlen(buf) - 1; isspace(buf[c]); c--)
-		;
-	buf[c + 1] = '\0';
+        for (ret = buf; isspace(*ret); ret++)
+                ;
+        for (c = strlen(buf) - 1; isspace(buf[c]); c--)
+                ;
+        buf[c + 1] = '\0';
 
-	return ret;
+        return ret;
 }
 
 /* 
@@ -504,18 +504,18 @@ str_cleanup(char *s)
 const char *
 make_regex_str(TagLib_Tag *p)
 {
-	static char buf[2048];	/* arbitrary */
+        static char buf[2048];  /* arbitrary */
 
-	(void)snprintf(buf, 2048, "track: %d title: %s artist: %s album: %s"
-		       " genre: %s year: %d comment: %s",
-		       taglib_tag_year(p),
-		       taglib_tag_title(p),
-		       taglib_tag_artist(p),
-		       taglib_tag_album(p),
-		       taglib_tag_genre(p),
-		       taglib_tag_year(p),
-		       taglib_tag_comment(p));
-	return buf;
+        (void)snprintf(buf, 2048, "track: %d title: %s artist: %s album: %s"
+                       " genre: %s year: %d comment: %s",
+                       taglib_tag_year(p),
+                       taglib_tag_title(p),
+                       taglib_tag_artist(p),
+                       taglib_tag_album(p),
+                       taglib_tag_genre(p),
+                       taglib_tag_year(p),
+                       taglib_tag_comment(p));
+        return buf;
 }
 
 void
@@ -537,9 +537,9 @@ print_state()
         case EDIT_MODE:
                 s = "edit-mode";
                 break;
-	case HELP_MODE:
-		s = "help-mode";
-		break;
+        case HELP_MODE:
+                s = "help-mode";
+                break;
         }
         mvprintw(0, 0, " %s", s);
         refresh();
@@ -547,5 +547,5 @@ print_state()
 void
 resize(int s)
 {
-	resizep = 1;
+        resizep = 1;
 }
