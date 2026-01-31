@@ -20,13 +20,14 @@ Dependencies:
     * taglib (sometimes called libtag) 
 
 Planned features:
-    * Help screen
+    * DONE: Help screen
     * Show file path in info window
     * Use a custom set of tags
-    * Hide cursor in directory and file modes
+    * DONE: Hide cursor in directory and file modes
     * Load argv[1] instead of cwd
     * Command line option to prevent scanning directory
     * Sort files before adding? or at least sort the files in each directory added
+    * Allow reordering in file window
 
 Check out INSTALL for installation instructions. Check out the man
 page for usage info.
