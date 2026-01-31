@@ -78,7 +78,7 @@ extern char cwd[];
 extern const char *ext[];
 extern struct textbox edit;
 extern struct frame dir, file, info;
-extern enum mode { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE } state;
+extern enum mode { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE, HELP_MODE } state;
 extern jmp_buf env;
 
 struct entry {	
@@ -130,6 +130,8 @@ char *str_cleanup(char *);
 char *clean_xstrdup(char *);
 const char *make_regex_str(TagLib_Tag *);
 void resize(int);
+void show_help();
+void hide_help();
 
 void stag_warnx(const char *, ...);
 void stag_warn(const char *, ...);
